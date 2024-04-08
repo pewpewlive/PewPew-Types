@@ -2,10 +2,7 @@
 # Copyright (c) 2024 PPMS Team.
 # This project is licensed under MIT license.
 
-$raw_docs = (Invoke-WebRequest -Uri "https://raw.githubusercontent.com/pewpewlive/ppl-utils/master/docs/raw_documentation.js").Content
-
-# Strip `var documentation = ` to make it compatible with JSON
-$raw_docs = $raw_docs.Replace("var documentation = ", "")
+$raw_docs = (Invoke-WebRequest -Uri "https://raw.githubusercontent.com/pewpewlive/ppl-docs/master/raw_documentation.json").Content
 
 $docs_obj = ConvertFrom-Json $raw_docs -AsHashtable
 
@@ -79,7 +76,7 @@ foreach ($function in $fmath.functions) {
 }
 
 @"
--- Auto-generated type definitions from ppl-utils (https://github.com/pewpewlive/ppl-utils)
+-- Auto-generated type definitions from ppl-docs (https://github.com/pewpewlive/ppl-docs)
 ---@meta
 ---@alias fixedpoint number
 ---@alias entity_id integer

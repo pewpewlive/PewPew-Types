@@ -1,4 +1,4 @@
--- Auto-generated type definitions from ppl-utils (https://github.com/pewpewlive/ppl-utils)
+-- Auto-generated type definitions from ppl-docs (https://github.com/pewpewlive/ppl-docs)
 ---@meta
 ---@alias fixedpoint number
 ---@alias entity_id integer
@@ -162,7 +162,7 @@ function pewpew.get_player_inputs(player_index) end
 ---@return any
 function pewpew.get_score_of_player(player_index) end
 
---- Configures the player at the specified `player_index`. `player_index` must in the range [0, get_number_of_players() - 1]. A `camera_distance` less than 0fx makes the camera move away from the ship. `camera_rotation_x_axis` is in radian and rotates along the X axis. To temporarily override the XY position of the camera, set both `camera_x_override` and `camera_y_override`; this will make the camera be interpolated from wherever it was, to that new position.
+--- Configures the player at the specified `player_index`. `player_index` must in the range [0, get_number_of_players() - 1]. A `camera_distance` less than 0fx makes the camera move away from the ship. `camera_rotation_x_axis` is in radian and rotates along the X axis. To temporarily override the XY position of the camera, set **both** `camera_x_override` and `camera_y_override`; this will make the camera be interpolated from wherever it was, to that new position.
 ---@param player_index integer
 ---@param configuration table
 function pewpew.configure_player(player_index, configuration) end
@@ -505,7 +505,7 @@ function pewpew.customizable_entity_set_mesh_xyz_scale(entity_id, x_scale, y_sca
 ---@param z_axis fixedpoint
 function pewpew.customizable_entity_set_mesh_angle(entity_id, angle, x_axis, y_axis, z_axis) end
 
---- Skips the interpolation of the mesh's attributes (x, y, z, scale_x, scale_y, scale_z, rotation).
+--- Skips the interpolation of the mesh's attributes (x, y, z, scale_x, scale_y, scale_z, rotation) for one tick. Only applies to the attributes that were set before the call to `customizable_entity_skip_mesh_attributes_interpolation`
 ---@param entity_id entity_id
 function pewpew.customizable_entity_skip_mesh_attributes_interpolation(entity_id) end
 
