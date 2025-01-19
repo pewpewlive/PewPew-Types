@@ -24,13 +24,18 @@ pewpew.EntityType = {
   BAF_RED = 14,
   WARY_MISSILE = 15,
   UFO_BULLET = 16,
-  PLAYER_BULLET = 17,
-  BOMB_EXPLOSION = 18,
-  PLAYER_EXPLOSION = 19,
-  BONUS = 20,
-  FLOATING_MESSAGE = 21,
-  POINTONIUM = 22,
-  BONUS_IMPLOSION = 23,
+  SPINY = 17,
+  SUPER_MOTHERSHIP = 18,
+  PLAYER_BULLET = 19,
+  BOMB_EXPLOSION = 20,
+  PLAYER_EXPLOSION = 21,
+  BONUS = 22,
+  FLOATING_MESSAGE = 23,
+  POINTONIUM = 24,
+  KAMIKAZE = 25,
+  BONUS_IMPLOSION = 26,
+  MACE = 27,
+  PLASMA_FIELD = 28,
 }
 
 ---@enum
@@ -51,6 +56,8 @@ pewpew.CannonType = {
   FOUR_DIRECTIONS = 4,
   DOUBLE_SWIPE = 5,
   HEMISPHERE = 6,
+  SHOTGUN = 7,
+  LASER = 8,
 }
 
 ---@enum
@@ -76,11 +83,18 @@ pewpew.BombType = {
 }
 
 ---@enum
+pewpew.MaceType = {
+  DAMAGE_PLAYERS = 0,
+  DAMAGE_ENTITIES = 1,
+}
+
+---@enum
 pewpew.BonusType = {
   REINSTANTIATION = 0,
   SHIELD = 1,
   SPEED = 2,
   WEAPON = 3,
+  MACE = 4,
 }
 
 ---@enum
@@ -89,6 +103,9 @@ pewpew.WeaponType = {
   FREEZE_EXPLOSION = 1,
   REPULSIVE_EXPLOSION = 2,
   ATOMIZE_EXPLOSION = 3,
+  PLASMA_FIELD = 4,
+  WALL_TRAIL_LASSO = 5,
+  MACE = 6,
 }
 
 ---@enum
@@ -182,6 +199,16 @@ function pewpew.get_player_configuration(player_index) end
 ---@param configuration table
 function pewpew.configure_player_ship_weapon(ship_id, configuration) end
 
+--- Configures a wall trail that kills everything inside when the ship it is attached to creates a loop with it. `wall_length` is clamped to  [100, 4000]. In symbiosis, the length is 2000. If `wall_length` is not specified, the trail is removed.
+---@param ship_id entity_id
+---@param configuration table
+function pewpew.configure_player_ship_wall_trail(ship_id, configuration) end
+
+--- Configures various properties of the player ship identified by`id`
+---@param ship_id entity_id
+---@param configuration table
+function pewpew.configure_player_ship(ship_id, configuration) end
+
 --- Reduces the amount of shield of the player that owns the ship by `damage` points. If the player receives damage while having 0 shields left, the player loses.
 ---@param ship_id entity_id
 ---@param damage integer
@@ -252,6 +279,17 @@ function pewpew.play_sound(sound_path, index, x, y) end
 ---@param scale fixedpoint
 ---@param particle_count integer
 function pewpew.create_explosion(x, y, color, scale, particle_count) end
+
+--- Adds a particle at the given position, that moves at the given speed, with the given color and duration. The engine may not spawn all particles if are already a lot of particles alive already spawned (e.g. more than 1000)
+---@param x fixedpoint
+---@param y fixedpoint
+---@param z fixedpoint
+---@param dx fixedpoint
+---@param dy fixedpoint
+---@param dz fixedpoint
+---@param color integer
+---@param duration integer
+function pewpew.add_particle(x, y, z, dx, dy, dz, color, duration) end
 
 --- Creates a new Asteroid at the location `x`,`y` and returns its entityId.
 ---@param x fixedpoint
@@ -336,6 +374,13 @@ function pewpew.new_customizable_entity(x, y) end
 ---@return entity_id
 function pewpew.new_inertiac(x, y, acceleration, angle) end
 
+--- Creates a new Kamikaze at the location `x`,`y` that starts moving in the direction specified by `angle`.
+---@param x fixedpoint
+---@param y fixedpoint
+---@param angle fixedpoint
+---@return entity_id
+function pewpew.new_kamikaze(x, y, angle) end
+
 --- Creates a new Mothership at the location `x`,`y`, and returns its entityId.
 ---@param x fixedpoint
 ---@param y fixedpoint
@@ -344,12 +389,29 @@ function pewpew.new_inertiac(x, y, acceleration, angle) end
 ---@return entity_id
 function pewpew.new_mothership(x, y, type, angle) end
 
+--- Creates a new mothership bullet.
+---@param x fixedpoint
+---@param y fixedpoint
+---@param angle fixedpoint
+---@param speed fixedpoint
+---@param color integer
+---@param large boolean
+---@return entity_id
+function pewpew.new_mothership_bullet(x, y, angle, speed, color, large) end
+
 --- Creates a new Pointonium at the location `x`,`y`. Value must be 64, 128, or 256.
 ---@param x fixedpoint
 ---@param y fixedpoint
 ---@param value integer
 ---@return entity_id
 function pewpew.new_pointonium(x, y, value) end
+
+--- Creates a new plasma field between `ship_a` and `ship_b`, and returns its entityId. If `ship_a` or `ship_b` is destroyed, the plasma field is destroyed as well.
+---@param ship_a_id entity_id
+---@param ship_b_id entity_id
+---@param config table
+---@return entity_id
+function pewpew.new_plasma_field(ship_a_id, ship_b_id, config) end
 
 --- Creates a new Player Ship at the location `x`,`y` for the player identified by `player_index`, and returns its entityId.
 ---@param x fixedpoint
@@ -379,6 +441,22 @@ function pewpew.new_rolling_cube(x, y) end
 ---@param speed fixedpoint
 ---@return entity_id
 function pewpew.new_rolling_sphere(x, y, angle, speed) end
+
+--- Creates a new Spiny at the location `x`,`y` that starts moving in the direction specified by `angle`. `attractivity` specifies how much the Spiny is attracted to the closest player: 1fx is normal attractivity.
+---@param x fixedpoint
+---@param y fixedpoint
+---@param angle fixedpoint
+---@param attractivity fixedpoint
+---@return entity_id
+function pewpew.new_spiny(x, y, angle, attractivity) end
+
+--- Creates a new Super Mothership at the location `x`,`y`, and returns its entityId.
+---@param x fixedpoint
+---@param y fixedpoint
+---@param type integer
+---@param angle fixedpoint
+---@return entity_id
+function pewpew.new_super_mothership(x, y, type, angle) end
 
 --- Creates a new Wary at the location `x`,`y`.
 ---@param x fixedpoint
@@ -445,10 +523,21 @@ function pewpew.entity_destroy(entity_id) end
 ---@return boolean
 function pewpew.entity_react_to_weapon(entity_id, weapon) end
 
---- Sets whether the position of the mesh wil be interpolated when rendering. In general, this should be set to true if the entity will be moving smoothly.
+--- Adds a mace to the entity identified with `entity_id`. If `rotation_speed` exists, the mace will have a natural rotation, otherwise it will move due to inertia.
+---@param target_id entity_id
+---@param config table
+---@return entity_id
+function pewpew.entity_add_mace(target_id, config) end
+
+--- Sets whether the position of the mesh wil be interpolated when rendering. In general, this should be set to true if the entity will be moving.
 ---@param entity_id entity_id
 ---@param enable boolean
 function pewpew.customizable_entity_set_position_interpolation(entity_id, enable) end
+
+--- Sets whether the angle of the mesh wil be interpolated when rendering. Angle interpolation is enabled by default.
+---@param entity_id entity_id
+---@param enable boolean
+function pewpew.customizable_entity_set_angle_interpolation(entity_id, enable) end
 
 --- Sets the mesh of the customizable entity identified by `id` to the mesh described in the file `file_path` at the index `index`. `index` starts at 0. If `file_path` is an empty string, the mesh is removed.
 ---@param entity_id entity_id
@@ -552,6 +641,16 @@ function pewpew.customizable_entity_start_spawning(entity_id, spawning_duration)
 ---@param entity_id entity_id
 ---@param explosion_duration integer
 function pewpew.customizable_entity_start_exploding(entity_id, explosion_duration) end
+
+--- Sets a tag on customizable entities. The tag can be read back with `customizable_entity_get_tag`.
+---@param entity_id entity_id
+---@param tag integer
+function pewpew.customizable_entity_set_tag(entity_id, tag) end
+
+--- Returns the tag that was set, or 0 if no tag was set.
+---@param entity_id entity_id
+---@return integer
+function pewpew.customizable_entity_get_tag(entity_id) end
 
 fmath = {}
 
