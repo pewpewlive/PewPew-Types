@@ -54,7 +54,20 @@ foreach ($function in $pewpew.functions) {
   $code += ("function pewpew.{0}({1}) end`n`n" -f $function.func_name, $params)
 }
 
-$code += "fmath = {}`n`n"
+
+@"
+-- Auto-generated type definitions from ppl-docs (https://github.com/pewpewlive/ppl-docs)
+---@meta
+---@alias fixedpoint number
+---@alias entity_id integer
+
+pewpew = {}
+
+$code
+"@ | Out-File -Encoding utf8 -FilePath "./library/pewpew.lua"
+
+
+$code = ""
 
 foreach ($function in $fmath.functions) {
   $code += ("--- {0}`n" -f $function.comment)
@@ -78,10 +91,8 @@ foreach ($function in $fmath.functions) {
 @"
 -- Auto-generated type definitions from ppl-docs (https://github.com/pewpewlive/ppl-docs)
 ---@meta
----@alias fixedpoint number
----@alias entity_id integer
 
-pewpew = {}
+fmath = {}
 
 $code
-"@ | Out-File -Encoding utf8 -FilePath "./definitions/pewpew.d.lua"
+"@ | Out-File -Encoding utf8 -FilePath "./library/fmath.lua"

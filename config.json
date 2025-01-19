@@ -1,0 +1,14 @@
+{
+  // Name of the addon
+  "name": "PewPew Types",
+
+  // Lua string patterns to look for in filenames.
+  // If detected, this addon will be recommended to enable
+  "files": ["level.lua"],
+
+  // List of settings to apply when this addon is enabled
+  "settings": {
+    "Lua.diagnostics.disable": ["malformed-number", "lowercase-global"],
+    "Lua.diagnostics.globals": ["pewpew", "fmath"]
+  }
+}
